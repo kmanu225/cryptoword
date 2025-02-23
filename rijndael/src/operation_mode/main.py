@@ -2,33 +2,42 @@ from operation import *
 
     
 if __name__ == "__main__":
-    AES256_KEY = b'rijndaelrijndaelrijndaelrijndael'
-    AES192_KEY = b'rijndaelrijndaelrijndael'
-    AES128_KEY = b'rijndaelrijndael'
-    KEYS = [AES128_KEY, AES192_KEY, AES256_KEY]
     
-    PLAINTEXT = b"crypto{AES}"
-    
-    for key in KEYS:
+    # TEST AES AEAD
+    aes_256_key = get_random_bytes(32)
+    aes_192_key = get_random_bytes(24)
+    aes_128_key = get_random_bytes(16)
+    keys = [aes_128_key, aes_192_key, aes_256_key]
+
+    plaintext = b"crypto{AES}"
+
+    for key in keys:
         try:
-            Primitive_Mode = ["ECB", "CBC", "CFB", "OFB", "CTR"]
-            for mode in Primitive_Mode:
-                # Example: AES-256 in CBC mode
-                aes = PrimitiveMode(key, mode)
-                ciphertext = aes.encrypt(PLAINTEXT)
-                print(f"AES-{len(key*8)}-{mode} Ciphertext: {ciphertext}")
+            aead = ["CCM", "EAX", "GCM", "OCB", "SIV"]
+            associated_data = get_random_bytes(16)
 
-                decrypted_text = aes.decrypt(ciphertext)
-                assert decrypted_text == PLAINTEXT
+            for mode in aead:
+                if mode == "SIV":
+                    key = get_random_bytes(2*len(key))
+                    nonce = get_random_bytes(16)
 
-            AEAD = ["CCM", "EAX", "GCM", "SIV"]
-            associated_data = b"Associated data"
-            for mode in AEAD:
-                aes = AEADMode(key, mode)
-                ciphertext, tag = aes.encrypt(PLAINTEXT, associated_data)
+                elif mode == "CCM":
+                    nonce = get_random_bytes(13)
+            
+                elif mode == "OCB":
+                    nonce = get_random_bytes(15)
+
+                else:
+                    nonce = get_random_bytes(16)
+                   
+
+                aes = authenticated_AES(key, mode, nonce)
+                ciphertext, tag = aes.encrypt(plaintext, associated_data)
                 print(f"AES-{len(key*8)}-{mode} Ciphertext: {ciphertext}, Tag: {tag}")
 
+                aes = authenticated_AES(key, mode, nonce)
                 decrypted_text = aes.decrypt(ciphertext, tag, associated_data)
-                assert decrypted_text == PLAINTEXT
+                assert decrypted_text == plaintext
         except Exception as e:
             print(f"Error: {e}")
+
