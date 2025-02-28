@@ -1,4 +1,4 @@
-from utils import np, plt, invert, weierstrass
+from utils import np, plt, invert, weierstrass, isprime, randint
 
 INF = np.inf  # Represents the point at infinity
 
@@ -29,10 +29,8 @@ class Point:
     def __eq__(self, Q):
         return self.x == Q.x and self.y == Q.y and self.p == Q.p and self.a == Q.a
 
-    def __neg__(self):
-        if self.x == INF:
-            return self
-        return Point(self.x, (-self.y) % self.p, self.a, self.b, self.p)
+    def __ne__(self, Q):
+        return not self == Q
 
     def square(self):
         """
@@ -64,10 +62,10 @@ class Point:
 
         elif self.x == Q.x and self.y == Q.y:
             return self.square()
-        
+
         elif self.x == Q.x and self.y == -Q.y:
             return Point(INF, INF, self.a, self.b, self.p)
-        
+
         else:
             if self == Point(INF, INF, self.a, self.b, self.p):
                 return Q
@@ -80,9 +78,9 @@ class Point:
                 delta_x = pow(Q.x - self.x, 1, self.p)
                 delta_y = pow(Q.y - self.y, 1, self.p)
 
-                if delta_x == 0:    # Points are inverses
+                if delta_x == 0:  
                     return Point(INF, INF, self.a, self.b, self.p)
-                
+
                 else:
                     m = delta_y * invert(delta_x, self.p)
                     t = self.y - m * self.x
@@ -94,8 +92,16 @@ class Point:
     def __radd__(self, Q):
         return self.__add__(Q)
 
+    def __neg__(self):
+        if self.x == INF:
+            return self
+        return Point(self.x, pow(-self.y, 1, self.p), self.a, self.b, self.p)
+
+    def __sub__(self, Q):
+        return -Q + self
+
     # Exponentiation of a point
-    def __pow__(self, n: int):
+    def __mul__(self, n: int):
         if self == Point(INF, INF, self.a, self.b, self.p):
             return self
 
@@ -125,6 +131,20 @@ class Point:
         # print(f"n: {n}, base: {base}, Point^{i}: {power}")
         return power
 
+    def __rmul__(self, n: int):
+        return self.__mul__(n)
+    
+
+    def get_order_point(self):
+        O = Point(INF, INF, self.a, self.b, self.p)
+        Q = self
+
+        n = 1
+        while Q != O:
+            Q += 2 * self
+            n += 2
+        return n
+
 
 class ECC:
     """
@@ -136,7 +156,10 @@ class ECC:
     def __init__(self, a, b, p=5):
         self.a = a
         self.b = b
-        self.p = p
+        if isprime(p):
+            self.p = p
+        else:
+            raise ValueError("p must be a prime number")
 
     def onCuve(self, x, y):
         return pow(weierstrass(x, y, self.a, self.b), 1, self.p) == 0
@@ -156,40 +179,54 @@ class ECC:
         """Get the number of points on the curve. The infinity point is also counted."""
         return len(self.get_points())
 
-    # Show the curve both over real numbers and natural numbers
     def plotCurve(self, a, b, p):
-        """Plot the elliptic curve."""
+        """Plot the elliptic curve with two subplots: real numbers and modular points."""
         points = self.get_points()
         n = self.cardinality()
 
-        x_points = []
-        y_points = []
-        for i in range(n):
-            x_points.append(points[i].x)
-            y_points.append(points[i].y)
+        x_points = [point.x for point in points]
+        y_points = [point.y for point in points]
 
-        # Real numbers
+        fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+        # **First Subplot: Real Elliptic Curve**
         window = 5
         y, x = np.ogrid[-window:window:100j, -window:window:100j]
-        plt.contour(x.ravel(), y.ravel(), weierstrass(x, y, self.a, self.b), [0])
+        axes[0].contour(x.ravel(), y.ravel(), weierstrass(x, y, a, b), [0])
+        axes[0].set_title(rf"$y^2 = x^3 + {a}x + {b}$ (Real Numbers)")
+        axes[0].grid()
 
-        # Natural numbers
-        plt.scatter(x_points, y_points, color="blue")
+        # **Second Subplot: Modular Elliptic Curve**
+        axes[1].scatter(x_points, y_points, color="blue")
+        axes[1].set_title(
+            rf"$y^2 \equiv x^3 + {a}x + {b} [{p}]$" + f"\nCardinality : {n}"
+        )
+        axes[1].grid()
 
-        plt.title(f"y^2 = x^3 + {self.a}x + {self.b} mod[{self.p}]\nCardinality : {n}")
-        plt.grid()
+        plt.tight_layout()
         plt.show()
 
-    # Print points on the curve
     def __str__(self):
         points = self.get_points()
         list_points = [str(i) for i in points]
-        return f"Curve: y^2 = x^3 + {self.a}x + {self.b} mod[{self.p}]\n\n#E(Fp) : {self.cardinality()}\nPoints : {list_points}"
+        return f"Curve: y^2 = x^3 + {self.a}x + {self.b} [{self.p}]\n\n#E(Fp) : {self.cardinality()}\nPoints : {list_points}"
+
+    def get_prime_order(self):
+        points = self.get_points()
+        cardinality = self.cardinality()
+        i = randint(0, cardinality - 1)
+        point = points[i]
+        while not isprime(point.get_order_point()):
+            i = randint(0, cardinality - 1)
+            point = points[i]
+        return point.get_order_point(), point
 
 
 if __name__ == "__main__":
-    a, b, p = 0, 1, 5
+    a, b, p = -3, 1, 1217
     ec = ECC(a, b, p)
+    n, point = ec.get_prime_order()
+    print(n, point, n * point)
 
-    print(ec)
-    ec.plotCurve(a, b, p)
+    # 1259 (743, 473) ∞
+    # 1259 (117, 76) ∞

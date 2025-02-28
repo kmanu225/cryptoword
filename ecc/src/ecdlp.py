@@ -1,4 +1,4 @@
-from utils import isInvertable, np
+from utils import isInvertable, np, invert, randint
 from WeierstrassECC import ECC, Point
 
 
@@ -13,7 +13,7 @@ class EC_Key:
     def __init__(self, ecc: ECC, P: Point, l: int):
         self.ecc = ecc
         self.P = P
-        self.Q = P**l
+        self.Q = l * P
         self.l = l
 
     def pubKey(self):
@@ -43,7 +43,7 @@ class EC_Key:
         return f"Key(pubkey = {pubkey}, privkey = {privkey})"
 
 
-class ElGamal:
+class Elgamal:
     """
     Elgamal encryption scheme.\n
     @param key: Elliptic Curve Cryptography Key.
@@ -52,7 +52,7 @@ class ElGamal:
     def __init__(self, key: EC_Key):
         self.key = key
 
-    def eccEnc(self, M: Point):
+    def encrypt(self, M: Point):
         """
         Encrypt a message.\n
         @param M: Message to encrypt.
@@ -60,11 +60,11 @@ class ElGamal:
         """
         p, P, Q = self.key.ecc.p, self.key.P, self.key.Q
         k = np.random.randint(1, p - 2)  # Inialization vector
-        C1 = P**k
-        C2 = M + Q**k
+        C1 = k * P
+        C2 = M + k * Q
         return [C1, C2]
 
-    def eccDec(self, C1: Point, C2: Point):
+    def decrypt(self, C1: Point, C2: Point):
         """
         Decrypt a message.\n
         @param C1: Point.
@@ -72,7 +72,7 @@ class ElGamal:
         @return: Point.
         """
         l = self.key.l
-        return C2 - C1**l
+        return C2 - l * C1
 
 
 class DSA:
@@ -101,7 +101,7 @@ class DSA:
                 return r, s1, s2
             else:
                 return self.sign(h_M)
-        except ZeroDivisionError:
+        except ValueError:
             return self.sign(h_M)
 
     def verify(self, h_M: int, s1: int, s2: int) -> bool:
@@ -112,8 +112,8 @@ class DSA:
         if not (1 <= s2 and s2 <= n - 1):
             return False
 
-        v = h_M * pow(s2, -1, n)
-        u = s1 * pow(s2, -1, n)
+        v = h_M * invert(s2, n)
+        u = s1 * invert(s2, n)
         R = u * self.key.P + v * self.key.Q
 
         if R == Point(np.inf, np.inf, self.key.ecc.a, self.key.ecc.b, self.key.ecc.p):
@@ -123,8 +123,40 @@ class DSA:
 
 
 if __name__ == "__main__":
-    a, b, p = -3, 0, 191
+    a, b, p = -3, 1, 1217
+    print(f"Initializing elliptic curve with parameters: a = {a}, b = {b}, p = {p}")
     ec = ECC(a, b, p)
-    # print(ec)
-    keys = EC_Key(ec, Point(2, 57, a, b, p), 83)
-    print(keys)
+
+    ################################################################ Elgamal ################################################################
+    l = 83
+    keys = EC_Key(ec, Point(743, 473, a, b, p), l)
+    print(f"Generating EC key pair with private key length: {l}\n{keys}")
+
+    M = Point(1130, 1138, a, b, p)
+    print(f"Message to encrypt (as a point on the curve): M = {M}")
+
+    elgamal = Elgamal(keys)
+    C1, C2 = elgamal.encrypt(M)
+    print(f"Encrypted message: C1 = {C1}, C2 = {C2}")
+
+    decM = elgamal.decrypt(C1, C2)
+    print(f"Decrypted message: {decM}")
+
+    # Verify if decryption was successful
+    print(f"Decryption successful: {M == decM}")
+
+    ################################################################# DSA #################################################################
+    n, G = ec.get_prime_order()
+    print(f"Base point {G} of order {n}.")
+
+    s = randint(0, n-1)
+    Q = s*G
+    keys = EC_Key(ec, Q, s)
+
+    dsa = DSA(keys)
+    h_M = 20
+    sig = dsa.sign(h_M)
+    print(sig)
+
+    checkSig = dsa.verify(h_M, sig[0], sig[1])
+    print(checkSig)

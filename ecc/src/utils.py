@@ -3,9 +3,12 @@ from random import randint
 from matplotlib import pyplot as plt
 import numpy as np
 from sympy import mod_inverse as invert
+from sympy import isprime
+
 
 def weierstrass(x, y, a, b):
     return pow(y, 2) - pow(x, 3) - a * x - b
+
 
 def isInvertable(g: int, p: int) -> bool:
     """
@@ -17,7 +20,7 @@ def isInvertable(g: int, p: int) -> bool:
     try:
         invert(g, p)
         return True
-    except ZeroDivisionError:
+    except ValueError:
         return False
 
 
