@@ -1,17 +1,17 @@
 from utils import isInvertable, randint, invert, randint
-from WeierstrassECC import ECC, Point, INF
+from WeierstrassEC import Curve, Point, INF
 
 
 class EC_Key:
     """
     Elliptic Curve Cryptography Key.\n
-    @param ecc: Elliptic curve.
+    @param curve: Elliptic curve.
     @param P: Elliptic curve point public parameter.
     @param l: Integer private parameter.
     """
 
-    def __init__(self, ecc: ECC, P: Point, l: int):
-        self.ecc = ecc
+    def __init__(self, curve: Curve, P: Point, l: int):
+        self.curve = curve
         self.P = P
         self.Q = l * P
         self.l = l
@@ -21,15 +21,15 @@ class EC_Key:
         Elliptic Curve Cryptography public key parameters.\n
         @return :
         - p: Prime number defining the group Z/pZ.\n
-        - ecc: Elliptic curve.\n
+        - curve: Elliptic curve.\n
         - cardinality: Elliptic curve cardinality.\n
         - P: Elliptic curve point public parameter.\n
         - Q: Elliptic curve point public parameter
         """
         return [
-            self.ecc.p,
-            self.ecc.cardinality(),
-            self.ecc,
+            self.curve.p,
+            self.curve.cardinality(),
+            self.curve,
             self.P,
             self.Q,
         ]
@@ -48,14 +48,14 @@ class Elgamal:
     Elgamal encryption scheme.
     """
 
-    def encrypt(self, ecc: ECC, P: Point, Q: Point, M: Point):
+    def encrypt(self, curve: Curve, P: Point, Q: Point, M: Point):
         """
-        @param ecc : Elliptic Curve
+        @param curve : Elliptic Curve
         @param P : Base point.
         @param Q : Public key.
         @param M: Message to encrypt.
         """
-        p = ecc.p
+        p = curve.p
         k = randint(1, p - 2)
         C1 = k * P
         C2 = M + k * Q
@@ -76,8 +76,8 @@ class ECDSA:
     @param key: Elliptic Curve Cryptography Key.
     """
 
-    def __init__(self, ecc: ECC):
-        self.ecc = ecc
+    def __init__(self, curve: Curve):
+        self.curve = curve
 
     def sign(self, G: Point, n: int, s: int, m: int):
         """
@@ -114,8 +114,8 @@ class ECDSA:
         @param m : Message which has been signed
         """
         x, y = sig["x"], sig["y"]
-        O = Point(INF, INF, self.ecc.a, self.ecc.b, self.ecc.p)
-        if Q == O or not self.ecc.onCuve(Q.x, Q.y):
+        O = Point(INF, INF, self.curve.a, self.curve.b, self.curve.p)
+        if Q == O or not self.curve.onCuve(Q.x, Q.y):
             print("infinity 1")
             return False
 
@@ -139,19 +139,19 @@ class ECDSA:
 def testElgamal():
     a, b, p = -3, 1, 1217
     print(f"Initializing elliptic curve with parameters: a = {a}, b = {b}, p = {p}.")
-    ecc = ECC(a, b, p)
+    curve = Curve(a, b, p)
 
     l = 83
     P = Point(743, 473, a, b, p)
     Q = l * P
-    keys = EC_Key(ecc, P, l)
+    keys = EC_Key(curve, P, l)
     print(f"Generating EC key pair with private key length: {l}\n{keys}")
 
     M = Point(1130, 1138, a, b, p)
     print(f"Message to encrypt (as a point on the curve): M = {M}")
 
     elgamal = Elgamal()
-    C1, C2 = elgamal.encrypt(ecc, P, Q, M)
+    C1, C2 = elgamal.encrypt(curve, P, Q, M)
     print(f"Encrypted message: C1 = {C1}, C2 = {C2}")
 
     decM = elgamal.decrypt(l, C1, C2)
@@ -163,16 +163,16 @@ def testElgamal():
 
 def testECDSA():
     a, b, p = -3, 1, 1217
-    ecc = ECC(a, b, p)
+    curve = Curve(a, b, p)
     print(f"Initializing elliptic curve with parameters: a = {a}, b = {b}, p = {p}")
 
-    n, G = ecc.get_prime_order()
+    n, G = curve.get_prime_order()
     print(f"Base point {G} of order {n} : nG = {n*G}.")
 
     m = 20
     s = randint(1, n - 1)
     Q = s * G
-    dsa = ECDSA(ecc)
+    dsa = ECDSA(curve)
     sig = dsa.sign(G, n, s, m)
     print(sig)
 

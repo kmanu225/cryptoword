@@ -119,7 +119,7 @@ def examples_smooth_curves(title="Smooth curves"):
     )
 
     # **Elliptic Curve**: \( Y^2 = X^3 + aX + b \)
-    ecc = lambda a, b, x: np.sqrt(x**3 + a * x + b)
+    curve = lambda a, b, x: np.sqrt(x**3 + a * x + b)
     a, b = -1, 1  # Example parameters
     x_np = np.linspace(-2, 2, 300)
     x = []
@@ -128,7 +128,7 @@ def examples_smooth_curves(title="Smooth curves"):
     for x_i in x_np:
         if x_i**3 + a * x_i + b >= 0:
             x.append(x_i)
-            y_i = ecc(a, b, x_i)
+            y_i = curve(a, b, x_i)
             y_pos.append(y_i)
             y_neg.append(-y_i)
 
