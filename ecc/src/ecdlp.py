@@ -1,5 +1,5 @@
-from utils import isInvertable, np, invert, randint
-from WeierstrassECC import ECC, Point
+from utils import isInvertable, randint, invert, randint
+from WeierstrassECC import ECC, Point, INF
 
 
 class EC_Key:
@@ -45,118 +45,144 @@ class EC_Key:
 
 class Elgamal:
     """
-    Elgamal encryption scheme.\n
-    @param key: Elliptic Curve Cryptography Key.
+    Elgamal encryption scheme.
     """
 
-    def __init__(self, key: EC_Key):
-        self.key = key
-
-    def encrypt(self, M: Point):
+    def encrypt(self, ecc: ECC, P: Point, Q: Point, M: Point):
         """
-        Encrypt a message.\n
+        @param ecc : Elliptic Curve
+        @param P : Base point.
+        @param Q : Public key.
         @param M: Message to encrypt.
-        @return: Encrypted Points.
         """
-        p, P, Q = self.key.ecc.p, self.key.P, self.key.Q
-        k = np.random.randint(1, p - 2)  # Inialization vector
+        p = ecc.p
+        k = randint(1, p - 2)
         C1 = k * P
         C2 = M + k * Q
         return [C1, C2]
 
-    def decrypt(self, C1: Point, C2: Point):
+    def decrypt(self, l: int, C1: Point, C2: Point):
         """
-        Decrypt a message.\n
+        @param l : private key.
         @param C1: Point.
         @param C2: Point.
-        @return: Point.
         """
-        l = self.key.l
         return C2 - l * C1
 
 
-class DSA:
+class ECDSA:
     """
     Elliptic Curve Digital Signature Algorithm.\n
     @param key: Elliptic Curve Cryptography Key.
     """
 
-    def __init__(self, key: EC_Key):
-        self.key = key
+    def __init__(self, ecc: ECC):
+        self.ecc = ecc
 
-    def sign(self, h_M: int):
-        r = np.random.randint(1, self.key.ecc.cardinality() - 2)
-        n = self.key.ecc.cardinality()
-        s1 = pow(r * self.key.P.x, 1, n)
+    def sign(self, G: Point, n: int, s: int, m: int):
+        """
+        @param G : Base point for the signature.
+        @param n : Order of base point G.
+        @param s : Private key.
+        @param m : Message to sign.
+        """
+        k = randint(1, n - 1)
+        kG = k * G
+        x = pow(kG.x, 1, n)
 
-        if s1 == 0:
-            return self.sign(h_M)
+        if x == 0:
+            return self.sign(G, n, s, m)
 
         try:
-            if isInvertable(r, n):
-                r_inv = pow(r, -1, n)
-                s2 = pow((h_M + self.key.l * s1) * r_inv, 1, n)
-                if s2 == 0:
-                    return self.sign(h_M)
-                return r, s1, s2
+            if isInvertable(k, n):
+                k_inv = invert(k, n)
+                y = pow(k_inv * (m + s * x), 1, n)
+                if y == 0:
+                    return self.sign(G, n, s, m)
+                return {"x": x, "y": y}
             else:
-                return self.sign(h_M)
+                return self.sign(G, n, s, m)
         except ValueError:
-            return self.sign(h_M)
+            return self.sign(G, n, s, m)
 
-    def verify(self, h_M: int, s1: int, s2: int) -> bool:
-        n = self.key.ecc.cardinality()
-
-        if not (1 <= s1 and s1 <= n - 1):
+    def verify(self, G: Point, n: int, Q: Point, sig: tuple[int], m: int) -> bool:
+        """
+        @param G : Base point for the signature.
+        @param n : Order of base point G.
+        @param Q : Public key.
+        @param sig : Message to check signature.
+        @param m : Message which has been signed
+        """
+        x, y = sig["x"], sig["y"]
+        O = Point(INF, INF, self.ecc.a, self.ecc.b, self.ecc.p)
+        if Q == O or not self.ecc.onCuve(Q.x, Q.y):
+            print("infinity 1")
             return False
-        if not (1 <= s2 and s2 <= n - 1):
+
+        elif n * Q != O:
+            print("infinity 2")
             return False
 
-        v = h_M * invert(s2, n)
-        u = s1 * invert(s2, n)
-        R = u * self.key.P + v * self.key.Q
-
-        if R == Point(np.inf, np.inf, self.key.ecc.a, self.key.ecc.b, self.key.ecc.p):
+        elif 1 > x or x > n - 1 or 1 > y or y > n - 1:
+            print("beyond")
             return False
 
-        return R.x == s1
+        y_inv = invert(y, n)
+        u = pow(m * y_inv, 1, n)
+        v = pow(x * y_inv, 1, n)
+        V = u * G + v * Q
+        print("Verify", pow(V.x, 1, n), x)
+
+        return pow(V.x, 1, n) == x
 
 
-if __name__ == "__main__":
+def testElgamal():
     a, b, p = -3, 1, 1217
-    print(f"Initializing elliptic curve with parameters: a = {a}, b = {b}, p = {p}")
-    ec = ECC(a, b, p)
+    print(f"Initializing elliptic curve with parameters: a = {a}, b = {b}, p = {p}.")
+    ecc = ECC(a, b, p)
 
-    ################################################################ Elgamal ################################################################
     l = 83
-    keys = EC_Key(ec, Point(743, 473, a, b, p), l)
+    P = Point(743, 473, a, b, p)
+    Q = l * P
+    keys = EC_Key(ecc, P, l)
     print(f"Generating EC key pair with private key length: {l}\n{keys}")
 
     M = Point(1130, 1138, a, b, p)
     print(f"Message to encrypt (as a point on the curve): M = {M}")
 
-    elgamal = Elgamal(keys)
-    C1, C2 = elgamal.encrypt(M)
+    elgamal = Elgamal()
+    C1, C2 = elgamal.encrypt(ecc, P, Q, M)
     print(f"Encrypted message: C1 = {C1}, C2 = {C2}")
 
-    decM = elgamal.decrypt(C1, C2)
+    decM = elgamal.decrypt(l, C1, C2)
     print(f"Decrypted message: {decM}")
 
     # Verify if decryption was successful
-    print(f"Decryption successful: {M == decM}")
+    print(f"Decryption succeeded: {M == decM}")
 
-    ################################################################# DSA #################################################################
-    n, G = ec.get_prime_order()
-    print(f"Base point {G} of order {n}.")
 
-    s = randint(0, n-1)
-    Q = s*G
-    keys = EC_Key(ec, Q, s)
+def testECDSA():
+    a, b, p = -3, 1, 1217
+    ecc = ECC(a, b, p)
+    print(f"Initializing elliptic curve with parameters: a = {a}, b = {b}, p = {p}")
 
-    dsa = DSA(keys)
-    h_M = 20
-    sig = dsa.sign(h_M)
+    n, G = ecc.get_prime_order()
+    print(f"Base point {G} of order {n} : nG = {n*G}.")
+
+    m = 20
+    s = randint(1, n - 1)
+    Q = s * G
+    dsa = ECDSA(ecc)
+    sig = dsa.sign(G, n, s, m)
     print(sig)
 
-    checkSig = dsa.verify(h_M, sig[0], sig[1])
-    print(checkSig)
+    vrfy = dsa.verify(G, n, Q, sig, m)
+    if vrfy:
+        print("Verification Succeeded!")
+    else:
+        print("Verification Failed!")
+
+
+if __name__ == "__main__":
+    testElgamal()
+    testECDSA()

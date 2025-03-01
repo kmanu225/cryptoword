@@ -8,7 +8,7 @@ class Point:
     Point on an elliptic curve in Weierstrass form: y² = x³ + ax + b mod p
     """
 
-    def __init__(self, x, y, a, b, p):
+    def __init__(self, x:int, y:int, a:int, b:int, p:int):
 
         if x == np.inf and y == np.inf:
             self.x = x
