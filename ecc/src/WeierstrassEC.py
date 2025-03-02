@@ -100,7 +100,7 @@ class Point:
     def __sub__(self, Q):
         return -Q + self
 
-    # Exponentiation of a point
+    # Multiplication of a point
     def __mul__(self, n: int):
         if self == Point(INF, INF, self.a, self.b, self.p):
             return self

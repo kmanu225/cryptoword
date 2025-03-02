@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from random import randint
 
 
 class CartesianPlan:
@@ -45,7 +46,19 @@ class CartesianPlan:
             self.y_plots = 0
             self.x_plots += 1
 
-    def subplot(self, x, y, delimiter=None, title=None):
+    def curve2(self, window, function, parameters, title=None):
+        ax = self.axes[self.x_plots, self.y_plots]
+        precision = 1000j
+        y, x = np.ogrid[-window:window:precision, -window:window:precision]
+        ax.contour(x.ravel(), y.ravel(), function(x, y, parameters), [0])
+        ax.grid(True)
+        if title is not None:
+            ax.set_title(title)
+        self.increment_plots()
+
+    def curve(self, x, y, delimiter=None, title=None):
+        self.x = x
+        self.y = y
         ax = self.axes[self.x_plots, self.y_plots]
 
         if delimiter is not None:
@@ -60,11 +73,6 @@ class CartesianPlan:
     def show(self):
         self.fig.suptitle(self.title)
         plt.show()
-
-    def curve(self, x, y, delimiter=None, title=None):
-        self.x = x
-        self.y = y
-        self.subplot(self.x, self.y, delimiter=delimiter, title=title)
 
 
 def examples_smooth_curves(title="Smooth curves"):
@@ -89,7 +97,6 @@ def examples_smooth_curves(title="Smooth curves"):
         y,
         title=rf"$\left(\frac{{X}}{{{a}}}\right)^2 + \left(\frac{{Y}}{{{b}}}\right)^2 = 1$",
     )
-
 
     # **Cosine Function**
     cosinus = lambda t: (t, np.cos(t))
@@ -140,5 +147,40 @@ def examples_smooth_curves(title="Smooth curves"):
     plan.show()
 
 
+def examples_ec(title="Weirstrass form"):
+
+    plan = CartesianPlan((2, 3), title)
+    plan.init_plot()
+
+    # **Elliptic Curve**: \( Y^2 = X^3 + aX + b \)
+    weierstrass = lambda x, y, parameters: (
+        y**2 + parameters[0] * x * y + parameters[1] * y
+    ) - (x**3 + parameters[2] * x**2 + parameters[3] * x + parameters[4])
+
+    ec_sigular = lambda x, y, parameters: x**3 + parameters[0] * x**2 - y**2
+
+    window = 2
+    parameters = [
+        [0, 0, 0, -1, 0],
+        [0, 0, 0, -1, 1],
+        [0, 0, 0, 0, 1],
+        [0, 0, 0, -1, -1],
+        [0, 0, 0, 0, 0],
+         [0, 0, 1, 0, 0],
+    ]
+    for param in parameters:
+
+        plan.curve2(
+            window,
+            weierstrass,
+            param,
+            title=rf"$Y^2 + {param[0]}xy + {param[1]}y = X^3 + {param[2]}X^2 + {param[3]}X+ {param[4]}$",
+        )
+
+    # plan.curve2(window, ec_sigular, [1], title=rf"$Y^2 = X^3 + X^2$")
+    plan.show()
+
+
 if __name__ == "__main__":
-    examples_smooth_curves()
+    # examples_smooth_curves()
+    examples_ec()
