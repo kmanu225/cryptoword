@@ -147,7 +147,7 @@ def examples_smooth_curves(title="Smooth curves"):
     plan.show()
 
 
-def examples_ec(title="Weirstrass form"):
+def examples_weirstrass(title="Weirstrass form"):
 
     plan = CartesianPlan((2, 3), title)
     plan.init_plot()
@@ -166,7 +166,7 @@ def examples_ec(title="Weirstrass form"):
         [0, 0, 0, 0, 1],
         [0, 0, 0, -1, -1],
         [0, 0, 0, 0, 0],
-         [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
     ]
     for param in parameters:
 
@@ -181,6 +181,73 @@ def examples_ec(title="Weirstrass form"):
     plan.show()
 
 
+def examples_edward(title="Edward form"):
+
+    plan = CartesianPlan((2, 5), title)
+    plan.init_plot()
+
+    # **Edward Curve**: \( Y^2 + X^2 = 1 + dX^2Y^2 \)
+    edward = lambda x, y, parameters: y**2 + x**2 - (1 + parameters[0] * (x * y) ** 2)
+    window = 2
+    parameters = [
+        [-2000],
+        [-20],
+        [-2],
+        [0],
+        [7 / 10],
+        [8 / 10],
+        [9 / 10],
+        [1],
+        [20],
+        [200],
+    ]
+    for param in parameters:
+
+        plan.curve2(
+            window,
+            edward,
+            param,
+            title=rf"$Y^2 + X^2 = 1 + {param[0]}X^2Y^2$",
+        )
+
+    # plan.curve2(window, ec_sigular, [1], title=rf"$Y^2 = X^3 + X^2$")
+    plan.show()
+
+
+def examples_montgomery(title="Montgomery form"):
+
+    plan = CartesianPlan((2, 3), title)
+    plan.init_plot()
+
+    # **Elliptic Curve**: \( Y^2 = X^3 + aX + b \)
+    weierstrass = lambda x, y, parameters: parameters[1] * y**2 - (
+        x**3 + parameters[0] * x**2 + x
+    )
+
+    window = 5
+    parameters = [
+        [-1, 1],
+        [3, 1],
+        [-2, 1],
+        [1, -1],
+        [-3, -1],
+        [2, -1],
+    ]
+    for param in parameters:
+
+        plan.curve2(
+            window,
+            weierstrass,
+            param,
+            title=rf"${param[1]}Y^2 = X^3 + {param[0]}X^2 + X$",
+        )
+
+    # plan.curve2(window, ec_sigular, [1], title=rf"$Y^2 = X^3 + X^2$")
+    plan.show()
+
+
 if __name__ == "__main__":
     # examples_smooth_curves()
-    examples_ec()
+    # examples_weirstrass()
+    # examples_edward()
+    examples_montgomery()
