@@ -1,87 +1,54 @@
-# [ECC (Elliptic Curve Cryptography)](https://csrc.nist.gov/projects/elliptic-curve-cryptography)  
+Here’s a more developed version of your README:
 
-Elliptic Curve Cryptography (ECC) is an asymmetric cryptographic scheme similar to RSA. The underlying mathematics rely on elliptic curves. Unlike traditional cryptographic systems that operate over integer fields, ECC performs calculations on points that lie on an elliptic curve in a Cartesian plane.  
+---
 
-# What Are Elliptic Curves?  
+# [ECC (Elliptic Curve Cryptography)](https://csrc.nist.gov/projects/elliptic-curve-cryptography)
 
-An elliptic curve is an abstract mathematical object generally defined as **"a smooth, projective, algebraic curve of genus one, with a specified point \( O \)."** This definition may seem complex, so let's break down the key terms:  
+Elliptic Curve Cryptography (ECC) is an asymmetric cryptographic scheme that uses the mathematical structure of elliptic curves to create secure encryption systems. ECC is known for its high security with relatively small key sizes compared to traditional cryptographic schemes such as RSA. This makes it an efficient choice for modern cryptography, especially in environments with limited resources, such as mobile devices.
 
-- **Smooth**: Basically this means a perspective of an object in a defined space.
-- **Projective**: Basically, this refers to the perspective of an object in a defined space plus its extension to include points at infinity.  For example, the projective of the cartesian space is a space where every parallel line intersects at a sigle point at infinity.
-- **Algebraic**: The curve consists of points that satisfy a polynomial equation.  
-- **Genus** : We can see it as the number of holes when talking about surface (three dimension objects).
-- **Specified point \( O \)**: This is point which belongs to the curve.
+## Overview
+
+ECC relies on elliptic curves are defined over finite fields, and cryptographic operations are performed on points that lie on the curve in a Cartesian plane. The difficulty of solving the **Elliptic Curve Discrete Logarithm Problem (ECDLP)** is the basis of ECC’s security, making it resistant to attacks that are efficient on other cryptographic schemes.
+
+## Features of This Repository
+
+This repository provides a simple, illustrative implementation of Elliptic Curve Cryptography using **Weierstrass curves**. It demonstrates several key concepts related to ECC:
 
 
-<center>
-<p>
-    <img src="./ressources/smooth_curves.png" alt="Elliptic Curve">
-</p>
-<p>
-    <em>Fig 1: Smooth curves—curves without singularities— in the cartesian plan with they algebraic equation.</em>
-</p>
-</center>
+### 1. **Weirstrass Elliptic Curves**
 
-This definition does not really give us a clear overview of what an elliptic curve could look like. Elliptic curves are generally presented by their algebraic equation, completed with the above criteria.
-
-### Weirstrass curves
-
-$$
-y^{2} + a_{1}xy + a_{3}y = x^{3} + a_{2}x^{2} + a_{4}x + a_{6} \quad \text{(Weierstrass form)}
-$$
+This repository includes an implementation of Weierstrass elliptic curves, which are defined by the equation:
 
 $$
 y^{2} = x^{3} + ax + b \quad \text{(Weierstrass reduced form)}
 $$
 
-where $a_i$ belongs to a field and the discriminant $\Delta$ (given by $4a^3 + 27b^2$ in the reduced form) is nonzero in $F_p$, defining an elliptic curve over $F_p$. Every elliptic curve over $F_p$ can be converted to a short Weierstrass equation if $p$ is larger than 3.
+where $a$ and $b$ are constants, and the curve is smooth and non-singular when the discriminant $4a3+27b2≠0$.
 
-<center>
-<p>
-    <img src="./ressources/weirstrass_curves.png" alt="Elliptic Curve">
-</p>
-<p>
-<em>Fig 2: Weierstrass curve representation. The surrounding curves are not elliptic as they have a singularity point (cusp and a double point), i.e., Δ = 0.</em>
+Key features of this implementation include:
 
-</p>
-</center>
+- **Invariant Point at Infinity**: The elliptic curve is equipped with a special point at infinity, often denoted as OO. This point serves as the identity element for the group law of the curve, meaning that any point PP added to OO results in PP.
 
-### Montgomery curves
+- **Point Addition**: The group addition law is implemented, which allows you to add two distinct points on the curve. The sum of two points PP and QQ is another point RR on the curve, calculated using the slope of the line connecting PP and QQ.
 
-$$
-By^2 = x^3 + Ax^2 + x \quad \text{(Montgomery form)}
-$$
+- **Scalar Multiplication (Multiple Addition)**: This operation allows for the multiplication of a point PP by an integer nn, which is equivalent to adding PP to itself nn times. This operation is essential in ECC for generating public and private keys.
 
-where $B(A^2 - 4)$ is nonzero in $F_p$, defining an elliptic curve over $F_p$. Substituting $x = Bu - A/3$ and $y = Bv$ produces the short Weierstrass equation:
+### 2. **Illustration of Elliptic Curves**
 
-$$
-v^2 = u^3 + au + b
-$$
+This section includes graphical representations of elliptic curves, showing how the curve’s points behave and the geometric properties of these curves. By visualizing the curve, one can better understand how points on the curve are used in cryptographic operations.
 
-where
+### 3. **Elliptic Curve Discrete Logarithm Problem (ECDLP)**
 
-$$
-a = \frac{3 - A^2}{3B^2}, \quad b = \frac{2A^3 - 9A}{27B^3}.
-$$
+ECDLP is the core problem that ECC is based on. The repository provides an explanation of the ECDLP, which is considered computationally hard to solve. This difficulty ensures the security of ECC systems. The example illustrates how finding the discrete logarithm of a point on an elliptic curve is infeasible even with large amounts of computational resources.
 
-Montgomery curves were introduced by Montgomery in 1987.
+### 4. **Elliptic Curve Diffie-Hellman (ECDH)**
 
-### Edward curves
+The ECDH protocol allows two parties to securely exchange cryptographic keys over an insecure communication channel. Using elliptic curve mathematics, the protocol ensures that only the intended parties can derive the shared secret. This repository demonstrates how the ECDH key exchange works and provides a hands-on example of how keys can be exchanged and a shared secret can be generated.
 
-$$
-y^{2} + x^{2} = 1 + dx^{2}y^{2} \quad \text{(Edwards form)}
-$$
 
-where $d(1 - d)$ is nonzero in $F_p$, defining an elliptic curve over $F_p$. Substituting $x = \frac{u}{v}$ and $y = \frac{u-1}{u+1}$ produces the Montgomery equation:
 
-$$
-Bv^2 = u^3 + Au^2 + u
-$$
+## References
+- [KEM-Seculab](https://kem.gitbook.io/cybersecurity/cryptography/elliptic-curve-cryptography)
+- [NIST: Elliptic Curve Cryptography](https://csrc.nist.gov/projects/elliptic-curve-cryptography)
+- [RFC 6637: Elliptic Curve Diffie-Hellman (ECDH) and Elliptic Curve Digital Signature Algorithm (ECDSA)](https://tools.ietf.org/html/rfc6637)
 
-where
-
-$$
-A = \frac{2(1+d)}{1-d}, \quad B = \frac{4}{1-d}.
-$$
-
-Edwards curves were introduced by Edwards in 2007 in the case that $d$ is a fourth power. SafeCurves requires Edwards curves to be complete, i.e., for $d$ to not be a square; complete Edwards curves were introduced by Bernstein and Lange in 2007.
