@@ -1,5 +1,5 @@
 from utils import isInvertable, randint, invert, randint
-from WeierstrassEC import Curve, Point, INF
+from weierstrass import Curve, Point, INF
 
 
 class EC_Key:
