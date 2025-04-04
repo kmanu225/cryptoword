@@ -2,8 +2,18 @@ from math import sqrt, floor, gcd
 from sympy import isprime
 import numpy as np
 
-
 def get_primes_factors(n):
+    """
+    Returns the prime factors of a given number n. If the number is prime,
+    the function returns a list containing only n. Otherwise, it decomposes 
+    n into its prime factors and returns them in ascending order.
+
+    Args:
+        n (int): The number to factorize.
+
+    Returns:
+        list: A list of prime factors of the number n.
+    """
     if isprime(n):
         return [n]
 
@@ -21,6 +31,19 @@ q = lambda x, n: (x + floor(sqrt(n))) ** 2 - n
 
 
 def get_parameters(limit: int, n: int, S: list[int], x_0=-10):
+    """
+    Generates the parameters a, b, e, and v for the algorithm. These parameters 
+    are used in the quadratic sieve or related factorization algorithms.
+    
+    Args:
+        limit (int): The number of valid parameter sets to generate.
+        n (int): The number to factorize.
+        S (list[int]): A list of small primes used in the factorization.
+        x_0 (int, optional): The starting value for x. Defaults to -10.
+
+    Returns:
+        tuple: A tuple containing the dictionaries (a, b, e, v) which hold the parameters.
+    """
     m = floor(sqrt(n))
     a = dict()
     b = dict()
@@ -68,8 +91,18 @@ def get_parameters(limit: int, n: int, S: list[int], x_0=-10):
     return a, b, e, v
 
 
-# Nombres premiers pour lesquelles n est un résidu quadratique
 def get_base(n: int, limit):
+    """
+    Returns a list of prime numbers that are quadratic residues modulo n.
+    These primes are used as the base for the factorization algorithm.
+
+    Args:
+        n (int): The number to factorize.
+        limit (int): The number of primes to find.
+
+    Returns:
+        list: A list of primes that are quadratic residues modulo n.
+    """
     base = [-1]
     length = 1
     p = 2
@@ -86,6 +119,16 @@ def get_base(n: int, limit):
 
 
 def get_matrix(v: dict):
+    """
+    Converts the dictionary v into a matrix. The matrix is constructed by 
+    using the values of v as columns and the corresponding keys as row indices.
+
+    Args:
+        v (dict): A dictionary containing vectors as values.
+
+    Returns:
+        tuple: A tuple containing the matrix (as a numpy array) and the keys (list of row indices).
+    """
     matrix = np.array(list(v.values()))
     return matrix.transpose(), list(v.keys())
 
@@ -102,9 +145,6 @@ if __name__ == "__main__":
     print(v)
     print(M)
 
-    # b_candidate = b[-1] * b[4] * b[-6]  # trouver cette combinaison linéaire
-    # Y = a[-1] * a[4] * a[-6]
-
     b_candidate = b[12]
     Y = a[12]
 
@@ -112,4 +152,4 @@ if __name__ == "__main__":
     div1 = gcd(X - Y, n)
     div2 = gcd(X + Y, n)
 
-    print(f"diviseurs non-triviaux: {div1}, {div2}")
+    print(f"Non-trivial divisors: {div1}, {div2}")

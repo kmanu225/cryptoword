@@ -1,6 +1,6 @@
 from math import sqrt, ceil
 
-def main(y, g, p):
+def break_dlp(y, g, p):
     """
     This function solves the discrete logarithm problem using the Baby-Step Giant-Step algorithm.
     It finds an integer `l` such that `y = g^l mod p`.
@@ -49,4 +49,4 @@ if __name__ == "__main__":
     y = 48  
     
     # Perform the attack and get the solution l
-    l = main(y, g, p)
+    l = break_dlp(y, g, p)
