@@ -3,6 +3,17 @@ from sympy import isprime, gcd
 
 
 def get_primes_factors(n):
+    """
+    Returns the prime factors of a given number n. If the number is prime,
+    the function returns a list containing only n. Otherwise, it decomposes
+    n into its prime factors and returns them in ascending order.
+
+    Args:
+        n (int): The number to factorize.
+
+    Returns:
+        list: A list of prime factors of the number n.
+    """
     if isprime(n):
         return [n]
 
@@ -17,8 +28,18 @@ def get_primes_factors(n):
 
 
 def carmichael(n):
+    """
+    Checks whether a number n is a Carmichael number. A Carmichael number
+    is a composite number that satisfies Fermat's little theorem for all
+    integers a that are coprime to n.
+
+    Args:
+        n (int): The number to check.
+
+    Returns:
+        bool: True if n is a Carmichael number, False otherwise.
+    """
     primes = get_primes_factors(n)
-    print(f"Primes factors of {n}: {primes}")
     for prime in primes:
         if (n - 1) % (prime - 1) != 0:
             print(f"{n} is not a Carmichael number.")
@@ -28,6 +49,18 @@ def carmichael(n):
 
 
 def pocklington(n, a=2):
+    """
+    Pocklington's criterion to test whether a number n is prime.
+    It uses a certain form of the Fermat test along with the ability
+    to find a divisor q of n-1.
+
+    Args:
+        n (int): The number to check.
+        a (int): A base for Fermat's test.
+
+    Returns:
+        bool: True if n passes Pocklington's criterion, indicating n is prime.
+    """
     q_ = int(n**0.5)
     while (n - 1) % q_ != 0:
         q_ += 1
@@ -42,10 +75,22 @@ def pocklington(n, a=2):
     if gcd(pow(a, p_, n), n) != 1:
         return False
 
+    print(f"{n} is a Pocklington number.")
     return True
 
-## Test de Fermat: Presque sûr pour tous les nombres sauf les nombres de Carmichael
+
 def fermat(n, k=20):
+    """
+    Fermat's primality test. It is a probabilistic test to check if n is prime.
+    The test uses random numbers as bases and checks Fermat's little theorem.
+
+    Args:
+        n (int): The number to test.
+        k (int): The number of iterations to repeat the test.
+
+    Returns:
+        bool: True if n passes the Fermat test, indicating n is probably prime.
+    """
     if n < 4:
         return n == 2 or n == 3
     for _ in range(k):
@@ -56,12 +101,22 @@ def fermat(n, k=20):
                 print(f"{a}^{n-1}[{n}] = {pow(a, n - 1, n)}")
 
                 return False
-    print(f"{n} is probably prime.")
+    print(f"{n} is a Fermat number.")
     return True
 
 
-# Test de Miller-Rabin: Presque sûr pour tous les nombres
 def miller_rabin(n, k=20):
+    """
+    Miller-Rabin primality test. It is a probabilistic test to check if n is prime.
+    It is more accurate than Fermat's test and works for larger numbers.
+
+    Args:
+        n (int): The number to test.
+        k (int): The number of iterations to repeat the test.
+
+    Returns:
+        bool: True if n passes the Miller-Rabin test, indicating n is probably prime.
+    """
     if n < 4:
         return n == 2 or n == 3
 
@@ -94,10 +149,16 @@ def miller_rabin(n, k=20):
     return True
 
 
-
-
-
 def gen_prime(n):
+    """
+    Generates a random prime number with n bits using the Miller-Rabin test.
+
+    Args:
+        n (int): The number of bits of the prime.
+
+    Returns:
+        int: A randomly generated prime number.
+    """
     while True:
         p = random.randint(2 ** (n - 1), 2**n)
         if miller_rabin(p):
@@ -107,7 +168,12 @@ def gen_prime(n):
 if __name__ == "__main__":
     p1 = gen_prime(16)
     p2 = gen_prime(16)
+
     print(f"p1 = {p1}")
     print(f"p2 = {p2}")
+
+    assert carmichael(p1) == carmichael(p2)
+    assert fermat(p1) == fermat(p2)
+    assert pocklington(p1) == pocklington(p2)
     
-    print(pocklington(59629))
+

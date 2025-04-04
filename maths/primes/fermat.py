@@ -1,14 +1,25 @@
-"""Function to factorize a number using Fermat's method."""
 from math import isqrt
 
-
 def fermat_factorisation(n):
-    s = 0
-    t_square = n + s**2
-    while isqrt(t_square) ** 2 != t_square:
+    """
+    Factorizes a number using Fermat's method. Fermat's factorization method attempts to express
+    a given number as the difference of two squares, i.e., n = a^2 - b^2. If successful,
+    it returns the factors of n.
+
+    Args:
+        n (int): The number to be factorized.
+
+    Returns:
+        tuple: A tuple containing the difference of squares (t^2 - s^2), and the two factors
+               of the number n (a, b), where n = a * b.
+    """
+    s = 0  # Start with s = 0
+    t_square = n + s**2  # t^2 = n + s^2
+    while isqrt(t_square) ** 2 != t_square:  # Keep increasing s until t^2 is a perfect square
         s += 1
-        t_square = n + s**2
-    return t_square - s**2, isqrt(t_square) +s,  isqrt(t_square) - s
+        t_square = n + s**2  # Update t^2 to n + s^2
+    return t_square - s**2, isqrt(t_square) + s,  isqrt(t_square) - s
+
 
 
 if __name__ == "__main__":
