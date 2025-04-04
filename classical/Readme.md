@@ -11,8 +11,6 @@ This repository explores three classic encryption methods used throughout histor
 
 It is easily breakable using brute-force (only 25 keys) or frequency analysis.
 
----
-
 ## 🔁 Vigenère Cipher
 
 **Vigenère Cipher** improves upon Caesar by using a keyword to shift each letter by varying amounts.
@@ -20,10 +18,7 @@ It is easily breakable using brute-force (only 25 keys) or frequency analysis.
 - **Encryption:** `E[i] = (P[i] + K[i % len(K)]) mod 26`
 - **Decryption:** `D[j] = (C[j] - K[j % len(K)]) mod 26`
 
-
 It is harder to break than Caesar due to polyLATIN_ALPHABETic shifts, but still vulnerable to frequency analysis (e.g. Kasiski or Friedman test).
-
----
 
 ## 🧮 Affine Cipher
 
@@ -34,8 +29,6 @@ It is harder to break than Caesar due to polyLATIN_ALPHABETic shifts, but still 
 - **Decryption:** `D(x) = a⁻¹ * (x - b) mod 26` where `a⁻¹` is the modular inverse of `a mod 26`.
 
 It is more secure than Caesar, but still susceptible to frequency analysis.
-
----
 
 ## ⚠️ Note
 
