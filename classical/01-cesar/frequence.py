@@ -1,7 +1,7 @@
-from utils import ord_e, get_frequences, striper
-from cesar_bruteforce import rot_left, rot_right
+from utils import ORD_LOWER_E, get_frequences, striper
+from bruteforce import rot_left
 
-get_cesar_key = lambda frequence: ord(list(frequence.keys())[0]) - ord_e
+get_cesar_key = lambda frequence: ord(list(frequence.keys())[0]) - ORD_LOWER_E
 
 decrypt_cesar = lambda cyphertext: rot_left(
     cyphertext, get_cesar_key(get_frequences(cyphertext))

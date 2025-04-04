@@ -1,17 +1,46 @@
-from utils import ord_a, IC_fr, IC, get_frequences, striper
-from cesar_frequence import get_cesar_key
-from vigenere_kasiski import vigenere_to_cesars, cesars_to_vigenere, rot_left
-
+from utils import (
+    ORD_LOWER_A,
+    IC,
+    get_frequences,
+    striper,
+    get_cesar_key,
+    vigenere_to_cesars,
+    cesars_to_vigenere,
+    rot_left,
+)
 
 def transform_text(text, l):
+    """
+    Applies a transformation to the ciphertext by shifting each letter
+    using the value of the letter `l` positions earlier.
+
+    Args:
+        text (str): The input ciphertext.
+        l (int): The assumed key length.
+
+    Returns:
+        str: Transformed text based on shifting by previous characters.
+    """
     transformed_text = text[:l]
     n = len(text)
     for i in range(l, n):
-        transformed_text += rot_left(text[i], ord(transformed_text[i - l]) - ord_a)
+        transformed_text += rot_left(
+            text[i], ord(transformed_text[i - l]) - ORD_LOWER_A
+        )
     return transformed_text
 
 
 def extract_text(text):
+    """
+    Breaks transformed text into segments of even and odd indexed characters
+    based on possible key lengths (1 to 9).
+
+    Args:
+        text (str): The ciphertext.
+
+    Returns:
+        dict[int, list[str]]: Mapping of key length to list of segments.
+    """
     n = len(text)
     segments = dict()
 
@@ -21,6 +50,7 @@ def extract_text(text):
 
         sous_text = ""
         for i in range(l):
+            # Even indexed segment
             t = 0
             while 2 * t * l + i < n:
                 sous_text += transformed_text[2 * t * l + i]
@@ -28,6 +58,7 @@ def extract_text(text):
             segments_l.append(sous_text)
             sous_text = ""
 
+            # Odd indexed segment
             t = 0
             while (2 * t + 1) * l + i < n:
                 sous_text += transformed_text[(2 * t + 1) * l + i]
@@ -40,6 +71,15 @@ def extract_text(text):
 
 
 def compute_ic(text):
+    """
+    Computes the average Index of Coincidence (IC) for each possible key length.
+
+    Args:
+        text (str): The input ciphertext.
+
+    Returns:
+        dict[int, float]: Mapping of key length to average IC value.
+    """
     segments = extract_text(text)
     ic_texts = dict()
     for l, segment in segments.items():
@@ -52,29 +92,43 @@ def compute_ic(text):
 
 
 def decrypt_text(cypher_text, l):
+    """
+    Decrypts a ciphertext encrypted with a doubled-character Vigenère cipher.
+
+    Args:
+        cypher_text (str): The ciphertext to decrypt.
+        l (int): The estimated Vigenère key length.
+
+    Returns:
+        str: The decrypted plaintext.
+    """
+    # Step 1: Split into Caesar cipher segments
     cesars = vigenere_to_cesars(cypher_text, l)
-    
-    # modification du chiffré d'origine c -> d
+
+    # Step 2: Reverse the internal transformation c -> d
     for j in range(l):
         cesar = cesars[j]
         new_cesars = cesar[0]
         for i in range(1, len(cesar)):
-            new_cesars += rot_left(cesar[i], ord(new_cesars[-1]) - ord_a)
+            new_cesars += rot_left(cesar[i], ord(new_cesars[-1]) - ORD_LOWER_A)
         cesars[j] = new_cesars
 
-    # découpage selon la parité de la position
+    # Step 3: Split each Caesar into even and odd segments
     cesars_evens = [cesar[::2] for cesar in cesars]
     cesars_odds = [cesar[1::2] for cesar in cesars]
     key = ""
-    
+
+    # Step 4: Estimate the Caesar key shifts from frequency analysis
     for i in range(l):
         key_odd = get_cesar_key(get_frequences(cesars_odds[i]))
         key_even = get_cesar_key(get_frequences(cesars_evens[i]))
-        key += chr(key_even + ord_a)
+        key += chr(key_even + ORD_LOWER_A)
 
+        # Decrypt each segment
         cesars_odds[i] = rot_left(cesars_odds[i], key_odd)
         cesars_evens[i] = rot_left(cesars_evens[i], key_even)
 
+    # Step 5: Reconstruct the original segments by merging evens and odds
     for i in range(l):
         new_cesars = ""
         for j in range(len(cesars[i])):
@@ -84,6 +138,7 @@ def decrypt_text(cypher_text, l):
                 new_cesars += cesars_odds[i][j // 2]
         cesars[i] = new_cesars
 
+    # Step 6: Combine Caesar segments back into a full decrypted text
     vigenere = cesars_to_vigenere(cesars)
     return vigenere
 
