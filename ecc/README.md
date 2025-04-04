@@ -1,7 +1,3 @@
-Here’s a more developed version of your README:
-
----
-
 # [ECC (Elliptic Curve Cryptography)](https://csrc.nist.gov/projects/elliptic-curve-cryptography)
 
 Elliptic Curve Cryptography (ECC) is an asymmetric cryptographic scheme that uses the mathematical structure of elliptic curves to create secure encryption systems. ECC is known for its high security with relatively small key sizes compared to traditional cryptographic schemes such as RSA. This makes it an efficient choice for modern cryptography, especially in environments with limited resources, such as mobile devices.
