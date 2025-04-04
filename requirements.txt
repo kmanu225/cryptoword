@@ -2,3 +2,5 @@ pycryptodome
 gmpy2
 sympy
 pwntools
+numpy
+matplotlib
