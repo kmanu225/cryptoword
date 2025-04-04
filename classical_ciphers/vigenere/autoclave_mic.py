@@ -91,19 +91,19 @@ def compute_ic(text):
     return ic_texts
 
 
-def decrypt_text(cypher_text, l):
+def decrypt_text(cipher_text, l):
     """
     Decrypts a ciphertext encrypted with a doubled-character Vigenère cipher.
 
     Args:
-        cypher_text (str): The ciphertext to decrypt.
+        cipher_text (str): The ciphertext to decrypt.
         l (int): The estimated Vigenère key length.
 
     Returns:
         str: The decrypted plaintext.
     """
     # Step 1: Split into Caesar cipher segments
-    cesars = vigenere_to_cesars(cypher_text, l)
+    cesars = vigenere_to_cesars(cipher_text, l)
 
     # Step 2: Reverse the internal transformation c -> d
     for j in range(l):
@@ -144,7 +144,7 @@ def decrypt_text(cypher_text, l):
 
 
 if __name__ == "__main__":
-    cypher_text = "crlzfzdwkpavlfedmkeluqtztmeizcxrgqqyehplrrseeguffmfwszfdemnqtpnutldgaxuxermjrpakghwgxugnijrzyjasmapypzycpoybsgigtxvnmxhuxabywupvugelzhemmdratrflissvoftwdebigtbshchilbshgdeptxakwxeaxtpwyalztaeitlmfidzmsejauevoesswhjasmjaiulpxgnrlgiljcwyetbshmtinhulwsfrvewlweeueztrsgiuhcmehzsfvmgrqxavnnajixakkumlgjunyfucgnkmdeseeiztrhnvvhsquimfvhyjmhyjgifvqwlhiuuuepnjesydyajdxzgzhakukcczkzugttrzjmujmvhyfnwzvpdjaolrkoecmmpxwwpbwzwwutjhsavwhssldzensbqperskudgxlysrlsibycjwygwmhxgcvwsyuaqmvccmbjjmksyxsqxplbgsaivkpljgrrohlnruihgmsxqcilzcimeoiwvkingbbzrymmfiviqiydcqwflqwxlvlzw"
-    cypher_text = striper(cypher_text)
-    print(compute_ic(cypher_text))
-    print(decrypt_text(cypher_text, 4))
+    cipher_text = "crlzfzdwkpavlfedmkeluqtztmeizcxrgqqyehplrrseeguffmfwszfdemnqtpnutldgaxuxermjrpakghwgxugnijrzyjasmapypzycpoybsgigtxvnmxhuxabywupvugelzhemmdratrflissvoftwdebigtbshchilbshgdeptxakwxeaxtpwyalztaeitlmfidzmsejauevoesswhjasmjaiulpxgnrlgiljcwyetbshmtinhulwsfrvewlweeueztrsgiuhcmehzsfvmgrqxavnnajixakkumlgjunyfucgnkmdeseeiztrhnvvhsquimfvhyjmhyjgifvqwlhiuuuepnjesydyajdxzgzhakukcczkzugttrzjmujmvhyfnwzvpdjaolrkoecmmpxwwpbwzwwutjhsavwhssldzensbqperskudgxlysrlsibycjwygwmhxgcvwsyuaqmvccmbjjmksyxsqxplbgsaivkpljgrrohlnruihgmsxqcilzcimeoiwvkingbbzrymmfiviqiydcqwflqwxlvlzw"
+    cipher_text = striper(cipher_text)
+    print(compute_ic(cipher_text))
+    print(decrypt_text(cipher_text, 4))

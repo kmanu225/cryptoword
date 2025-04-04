@@ -38,8 +38,8 @@ NOTRE_DAME_PARIS_FREQUENCIES = {
 get_cesar_key = lambda frequence: ord(list(frequence.keys())[0]) - ORD_LOWER_E
 
 # Function to decrypt text with Caesar cipher using the calculated key
-decrypt_cesar = lambda cyphertext: rot_left(
-    cyphertext, get_cesar_key(get_frequences(cyphertext))
+decrypt_cesar = lambda ciphertext: rot_left(
+    ciphertext, get_cesar_key(get_frequences(ciphertext))
 )
 
 

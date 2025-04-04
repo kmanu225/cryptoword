@@ -61,7 +61,7 @@ def get_affine_key(frequence):
     return (a, b)
 
 
-def affine_cypher(text, key):
+def affine_cipher(text, key):
     """
     Encrypts a message using the affine cipher.
 
@@ -82,7 +82,7 @@ def affine_cypher(text, key):
     return result
 
 
-def affine_decypher(text, key):
+def affine_decipher(text, key):
     """
     Decrypts a message encrypted with the affine cipher.
 
@@ -107,9 +107,9 @@ def affine_decypher(text, key):
 
 
 if __name__ == "__main__":
-    decrypt_affine = lambda text: affine_decypher(text, get_affine_key(get_frequences(text)))
+    decrypt_affine = lambda text: affine_decipher(text, get_affine_key(get_frequences(text)))
 
-    cypher_text = "ntjmpumgxpqtstgapgtxpnchumtputgfsftgthnngxnchumwxootrtumhpyctgktjqtjchfooxujqhgztumxpotjxotfoqtohrxumhzutwftgtopfmnt jmpuatmfmshodpfrxpjjtatghbxuj"
+    cipher_text = "ntjmpumgxpqtstgapgtxpnchumtputgfsftgthnngxnchumwxootrtumhpyctgktjqtjchfooxujqhgztumxpotjxotfoqtohrxumhzutwftgtopfmnt jmpuatmfmshodpfrxpjjtatghbxuj"
     
-    cypher_text = striper(cypher_text)
-    print(decrypt_affine(cypher_text))
+    cipher_text = striper(cipher_text)
+    print(decrypt_affine(cipher_text))

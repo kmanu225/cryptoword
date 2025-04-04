@@ -37,7 +37,7 @@ def IC(text):
     return ic_text
 
 
-def get_l_mic(cypher_text, max_l=10, ic_lg=IC_FR):
+def get_l_mic(cipher_text, max_l=10, ic_lg=IC_FR):
     """
     Estimates the key length of a Vigenère cipher using the Mean Index of Coincidence.
 
@@ -46,13 +46,13 @@ def get_l_mic(cypher_text, max_l=10, ic_lg=IC_FR):
     it is likely to be the correct key length.
 
     Args:
-        cypher_text (str): The encrypted Vigenère ciphertext.
+        cipher_text (str): The encrypted Vigenère ciphertext.
         max_l (int): The maximum key length to test (default 10).
         ic_lg (float): The reference IC value (default is French IC).
     """
     for i in range(1, max_l + 1):
         mean_ic = 0
-        cesar_texts = vigenere_to_cesars(cypher_text, i)
+        cesar_texts = vigenere_to_cesars(cipher_text, i)
         for cesar_text in cesar_texts:
             mean_ic += IC(cesar_text)
         mean_ic /= len(cesar_texts)
@@ -78,8 +78,8 @@ def decrypt_vigenere_mic(text, l):
         str: The decrypted plaintext.
     """
     # Split the ciphertext into l Caesar ciphers
-    cypher_cesar_texts = vigenere_to_cesars(text, l)
-    Y_0 = cypher_cesar_texts[0]
+    cipher_cesar_texts = vigenere_to_cesars(text, l)
+    Y_0 = cipher_cesar_texts[0]
 
     # Guess the key shift of the first Caesar cipher
     delta_0 = get_cesar_key(get_frequences(Y_0))
@@ -88,7 +88,7 @@ def decrypt_vigenere_mic(text, l):
     # Align the other Caesar streams to Y_0 using MIC
     for i in range(1, l):
         for delta in range(26):
-            Y_i = cypher_cesar_texts[i]
+            Y_i = cipher_cesar_texts[i]
             if MIC(Y_0, rot_right(Y_i, delta)) > IC_FR:
                 decrypted_cesar_texts.append(rot_left(Y_i, delta_0 - delta))
 
@@ -97,8 +97,8 @@ def decrypt_vigenere_mic(text, l):
 
 
 if __name__ == "__main__":
-    cypher_text_1= "ufzbdemltfnlfgmoneefrttkophfeiuplbfxbtrmltfczfygipzjygblyyjivigpfpffveptmfmfavjyxbymfcisptpyhjeuvppmpemwejeiopjgpxbweqpgipwpygilrelmmciqcmtpioeinzmhyejeiuditpwqlhstpmpwslgpcrjpwqlvmpwfw"
+    cipher_text_1= "ufzbdemltfnlfgmoneefrttkophfeiuplbfxbtrmltfczfygipzjygblyyjivigpfpffveptmfmfavjyxbymfcisptpyhjeuvppmpemwejeiopjgpxbweqpgipwpygilrelmmciqcmtpioeinzmhyejeiuditpwqlhstpmpwslgpcrjpwqlvmpwfw"
            
-    get_l_mic(cypher_text_1)
-    print(decrypt_vigenere_mic(cypher_text_1, 3))
+    get_l_mic(cipher_text_1)
+    print(decrypt_vigenere_mic(cipher_text_1, 3))
 

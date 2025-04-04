@@ -33,7 +33,7 @@ decrypt_kasiski = lambda text, l: cesars_to_vigenere(
 
 
 if __name__ == "__main__":
-    cypher_text = "zbpuevpuqsdlzgllksousvpasfpddggaqwptdgptzweemqzrdjtddefekeferdprrcyndgluaowcnbptzzzrbvpssfpashpncotemhaeqrferdlrlwwertlussfikgoeuswotfdgqsyasrlnrzppdhtticfrciwurhcezrpmhtpuwiyenamrdbzyzwelzucamrptzqseqcfgdrfrhrpatsepzgfnaffisbpvdblisrplzgnemswaqoxpdseehbeeksdptdttqsdddgxurwnidbdddplncsd"
+    cipher_text = "zbpuevpuqsdlzgllksousvpasfpddggaqwptdgptzweemqzrdjtddefekeferdprrcyndgluaowcnbptzzzrbvpssfpashpncotemhaeqrferdlrlwwertlussfikgoeuswotfdgqsyasrlnrzppdhtticfrciwurhcezrpmhtpuwiyenamrdbzyzwelzucamrptzqseqcfgdrfrhrpatsepzgfnaffisbpvdblisrplzgnemswaqoxpdseehbeeksdptdttqsdddgxurwnidbdddplncsd"
 
-    print(get_l_kasiski(cypher_text, 3))
-    print(decrypt_kasiski(cypher_text, 4))
+    print(get_l_kasiski(cipher_text, 3))
+    print(decrypt_kasiski(cipher_text, 4))

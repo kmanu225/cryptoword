@@ -43,12 +43,12 @@ def rot_left(text, decalage):
     return result
 
 
-bruteforce_cesar = lambda cypher_text: [rot_left(cypher_text, i) for i in range(26)]
+bruteforce_cesar = lambda cipher_text: [rot_left(cipher_text, i) for i in range(26)]
 
 
 if __name__ == "__main__":
-    cypher_text = "shqhykpuplylklslnbtlzjlzabuwlbkljlchuaxbhuktltlxbhukvuuvbzshzlyaxblsslmbtlavbasltvuklhklshwlpulvuzlkpaxbljhulkvpawhzlayljvvsklaylkbaplyztvuklvbklcpcylwlukhuashnblyyljhylukobtislbulzljvukl"
+    cipher_text = "shqhykpuplylklslnbtlzjlzabuwlbkljlchuaxbhuktltlxbhukvuuvbzshzlyaxblsslmbtlavbasltvuklhklshwlpulvuzlkpaxbljhulkvpawhzlayljvvsklaylkbaplyztvuklvbklcpcylwlukhuashnblyyljhylukobtislbulzljvukl"
 
-    # cypher_text = striper(cypher_text)
-    for text in bruteforce_cesar(cypher_text):
-        print(f"Decalage: {bruteforce_cesar(cypher_text).index(text)}\n{text}\n\n")
+    # cipher_text = striper(cipher_text)
+    for text in bruteforce_cesar(cipher_text):
+        print(f"Decalage: {bruteforce_cesar(cipher_text).index(text)}\n{text}\n\n")
