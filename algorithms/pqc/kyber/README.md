@@ -34,9 +34,9 @@ This repository presents a short overview of **Kyber ML-PKE** algorithm as descr
 2. Compute matrix $\mathbf{A} = G(\rho)$  
 3. Sample secret key $\mathbf{s} \leftarrow \chi^k$, error vector $\mathbf{e} \leftarrow \chi^k$  
 4. Compute:
-   $$
+```math
    \mathbf{t} = \mathbf{A} \cdot \mathbf{s} + \mathbf{e} \mod q
-   $$
+```
 5. Derive binding hash: $h = \texttt{Hash}(\rho \,\|\, \mathbf{t})$  
 6. Output:
    - $\mathsf{pk} = (\rho, \mathbf{t})$  
@@ -53,22 +53,22 @@ This repository presents a short overview of **Kyber ML-PKE** algorithm as descr
 4. Compute $\mathbf{A} = G(\rho)$  
 5. Sample error vectors $\mathbf{e}_1 \leftarrow \chi^k$, $e_2 \leftarrow \chi$  
 6. Compute:
-$$
+```math
    \mathbf{u} = \mathbf{A}^T \cdot \mathbf{r} + \mathbf{e}_1 \mod q
-$$
+```
 
-$$
+```math
    \mathbf{v} = \mathbf{t}^T \cdot \mathbf{r} + e_2 + m \cdot \left\lfloor \frac{q}{2} \right\rfloor \mod q
-$$
+```
 
 7. Compress:
    - $\hat{\mathbf{u}} = \text{Compress}(\mathbf{u}, d_u)$  
    - $\hat{\mathbf{v}} = \text{Compress}(\mathbf{v}, d_v)$
 
 8. Derive shared key:
-   $$
+```math
    K = \texttt{KDF}(\mu \,\|\, \texttt{Hash}(\hat{\mathbf{u}}, \hat{\mathbf{v}}))
-   $$
+```
 
 9. Output ciphertext $(\hat{\mathbf{u}}, \hat{\mathbf{v}})$ and shared key $K$
 
@@ -79,9 +79,9 @@ $$
 
 1. Decompress $\hat{\mathbf{u}}, \hat{\mathbf{v}}$ to obtain $\mathbf{u}, \mathbf{v}$  
 2. Compute:
-   $$
+```math
    m' = \mathbf{v} - \mathbf{u}^T \cdot \mathbf{s} \mod q
-   $$
+```
 3. Apply symmetric reduction and rounding:
    - $m'_i \gets \text{SymmetricMod}_q(m'_i)$  
    - $\mu_i = \text{Round}_q(m'_i)$  
@@ -90,20 +90,20 @@ $$
 4. Recompute ephemeral $\mathbf{r} = \texttt{PRF}(\mu, \rho)$  
 5. Recompute $\mathbf{A} = G(\rho)$  
 6. Recompute:
-   $$
+```math
    \mathbf{u}' = \mathbf{A}^T \cdot \mathbf{r} + \mathbf{e}_1' \quad \text{(simulate)}
-   $$
-   $$
+```
+```math
    \mathbf{v}' = \mathbf{t}^T \cdot \mathbf{r} + e_2' + \texttt{Encode}(\mu) \cdot \left\lfloor \frac{q}{2} \right\rfloor
-   $$
+```
 7. Compress $(\mathbf{u}', \mathbf{v}')$ and compare with $(\hat{\mathbf{u}}, \hat{\mathbf{v}})$:
    - If match: Accept $\mu$  
    - Else: Use fallback shared secret
 
 8. Derive shared key:
-   $$
+```math
    K = \texttt{KDF}(\mu \,\|\, \texttt{Hash}(\hat{\mathbf{u}}, \hat{\mathbf{v}}))
-   $$
+```
 
 9. Output: $K$
 
