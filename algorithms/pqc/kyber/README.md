@@ -101,6 +101,7 @@ This repository presents a short overview of **Kyber ML-PKE** algorithm as descr
    - Else: Use fallback shared secret
 
 8. Derive shared key:
+
 ```math
    K = \texttt{KDF}(\mu \,\|\, \texttt{Hash}(\hat{\mathbf{u}}, \hat{\mathbf{v}}))
 ```
