@@ -53,12 +53,13 @@ This repository presents a short overview of **Kyber ML-PKE** algorithm as descr
 4. Compute $\mathbf{A} = G(\rho)$  
 5. Sample error vectors $\mathbf{e}_1 \leftarrow \chi^k$, $e_2 \leftarrow \chi$  
 6. Compute:
-   $$
+$$
    \mathbf{u} = \mathbf{A}^T \cdot \mathbf{r} + \mathbf{e}_1 \mod q
-   $$
-   $$
+$$
+
+$$
    \mathbf{v} = \mathbf{t}^T \cdot \mathbf{r} + e_2 + m \cdot \left\lfloor \frac{q}{2} \right\rfloor \mod q
-   $$
+$$
 
 7. Compress:
    - $\hat{\mathbf{u}} = \text{Compress}(\mathbf{u}, d_u)$  
