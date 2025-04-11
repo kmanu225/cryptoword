@@ -72,7 +72,7 @@ This repository presents a short overview of **Kyber ML-PKE** algorithm as descr
 
 9. Output ciphertext $(\hat{\mathbf{u}}, \hat{\mathbf{v}})$ and shared key $K$
 
-## 3. ML-KEM.Decapsulate($\mathsf{sk}, (\hat{\mathbf{u}}, \hat{\mathbf{v}})$)
+## 3. ML-KEM.Decapsulate($`\mathsf{sk}, (\hat{\mathbf{u}}, \hat{\mathbf{v}})`$)
 
 **Input**: Secret key $\mathsf{sk} = (\mathbf{s}, \rho, \mathbf{t}, h)$, Ciphertext $(\hat{\mathbf{u}}, \hat{\mathbf{v}})$  
 **Output**: Shared key $K$
