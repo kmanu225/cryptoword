@@ -35,10 +35,13 @@ Instead of storing the full matrix $\mathbf{A}$, we use a **public seed** $\rho 
 3. Sample secret vector $\mathbf{s} \leftarrow \chi^k$  
 4. Sample error vector $\mathbf{e} \leftarrow \chi^k$  
 5. Compute:
-   $$
+
+```math
    \mathbf{t} = \mathbf{A} \cdot \mathbf{s} + \mathbf{e} \mod q
-   $$
+```
+
 6. Output:
+
    - Public key: $(\rho, \mathbf{t})$
    - Secret key: $\mathbf{s}$
 
@@ -52,22 +55,27 @@ Instead of storing the full matrix $\mathbf{A}$, we use a **public seed** $\rho 
 3. Sample error vectors $\mathbf{e}_1 \leftarrow \chi^k$, $e_2 \leftarrow \chi$  
 4. Encode message $\mu$ into polynomial $m \in \mathcal{R}_q$  
 5. Compute:
-   $$
+
+```math
    \mathbf{u} = \mathbf{A}^T \cdot \mathbf{r} + \mathbf{e}_1 \mod q
-   $$
-   $$
+```
+
+```math
    \mathbf{v} = \mathbf{t}^T \cdot \mathbf{r} + e_2 + m \cdot \left\lfloor \frac{q}{2} \right\rfloor \mod q
-   $$
+```
 
 6. **Compress ciphertext**:
    - For $x$ in $\mathbf{u}$:  
-     $$
+
+```math
      \hat{x} = \text{Compress}_q(x, d_u) = \left\lfloor \frac{x \cdot 2^{d_u}}{q} \right\rfloor
-     $$
-   - For $x$ in $\mathbf{v}$:  
-     $$
+```
+
+- For $x$ in $\mathbf{v}$:  
+
+```math
      \hat{x} = \text{Compress}_q(x, d_v) = \left\lfloor \frac{x \cdot 2^{d_v}}{q} \right\rfloor
-     $$
+```
 
 7. Output: $(\hat{\mathbf{u}}, \hat{\mathbf{v}})$
 
@@ -79,13 +87,16 @@ Instead of storing the full matrix $\mathbf{A}$, we use a **public seed** $\rho 
 ### Decompression
 
 - For $x$ in $\hat{\mathbf{u}}$:  
-  $$
+
+```math
   x \gets \text{Decompress}_q(x, d_u) = \left\lfloor \frac{q \cdot x}{2^{d_u}} \right\rfloor
-  $$
+```
+
 - For $x$ in $\hat{\mathbf{v}}$:  
-  $$
+
+```math
   x \gets \text{Decompress}_q(x, d_v) = \left\lfloor \frac{q \cdot x}{2^{d_v}} \right\rfloor
-  $$
+```
 
 ### Symmetric Modular Reduction
 
@@ -107,9 +118,11 @@ Used to map coefficients to a centered range:
 
 1. Decompress $\hat{\mathbf{u}}$ and $\hat{\mathbf{v}}$ into $\mathbf{u}$ and $\mathbf{v}$  
 2. Compute:
-   $$
+
+```math
    m' = \mathbf{v} - \mathbf{u}^T \cdot \mathbf{s} \mod q
-   $$
+```
+
 3. For each coefficient $m'_i$:
    - Apply symmetric reduction: $m'_i \gets \text{SymmetricMod}_q(m'_i)$  
    - Recover bit: $\mu_i = \text{Round}_q(m'_i)$  

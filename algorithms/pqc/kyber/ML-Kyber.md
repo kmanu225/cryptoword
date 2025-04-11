@@ -12,8 +12,6 @@ This document outlines the key generation, encryption, and decryption algorithms
 
 Vectors and matrices of polynomials are denoted in bold (e.g., $\mathbf{a}$, $\mathbf{s}$).
 
-
-
 ## 1. Key Generation
 
 **Input**: Security parameter $k$
@@ -25,12 +23,14 @@ Vectors and matrices of polynomials are denoted in bold (e.g., $\mathbf{a}$, $\m
 2. Sample secret $\mathbf{s} \leftarrow \mathcal{R}_q^{k}$ generated via noise distribution.
 3. Sample error $\mathbf{e} \leftarrow \mathcal{R}_q^{k}$ generated via noise distribution.
 4. Compute:
-   $$\mathbf{t} = \mathbf{A} \cdot \mathbf{s} + \mathbf{e} \mod q$$
+
+```math
+\mathbf{t} = \mathbf{A} \cdot \mathbf{s} + \mathbf{e} \mod q
+```
+
 5. Output:
    - Public key: $(\mathbf{A}, \mathbf{t})$
    - Secret key: $\mathbf{s}$
-
-
 
 ## 2. Encryption
 
@@ -43,11 +43,16 @@ Vectors and matrices of polynomials are denoted in bold (e.g., $\mathbf{a}$, $\m
 2. Sample errors $\mathbf{e}_1,e_2 \leftarrow \chi$.
 3. Encode message $\mu$ into polynomial $m \in \mathcal{R}_q$.
 4. Compute:
-$$\mathbf{u} = \mathbf{A}^T \cdot \mathbf{r} + \mathbf{e}_1 \mod q$$
-$$\mathbf{v} = \mathbf{t}^T \cdot \mathbf{r} + e_2 + m \cdot \left\lfloor \frac{q}{2} \right\rfloor \mod q$$
+
+```math
+\mathbf{u} = \mathbf{A}^T \cdot \mathbf{r} + \mathbf{e}_1 \mod q
+```
+
+```math
+\mathbf{v} = \mathbf{t}^T \cdot \mathbf{r} + e_2 + m \cdot \left\lfloor \frac{q}{2} \right\rfloor \mod q
+```
+
 5. Output ciphertext $(\mathbf{u}, \mathbf{v})$
-
-
 
 ## 3. Decryption
 
@@ -57,6 +62,7 @@ $$\mathbf{v} = \mathbf{t}^T \cdot \mathbf{r} + e_2 + m \cdot \left\lfloor \frac{
 ### Symmetric Modular Reduction
 
 To ensure decryption is accurate, we use **symmetric modular reduction** :
+
 - $\text{SymmetricMod}_q(x) = x - q \cdot \left\lfloor \frac{x}{q} + \frac{1}{2} \right\rfloor$
 - This maps values into the symmetric range $\left[ -\frac{q}{2}, \frac{q}{2} \right]$
 
