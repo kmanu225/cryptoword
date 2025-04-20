@@ -8,9 +8,3 @@ The main objective is to show the internals of AES through source code. If you w
 
 - **AES Algorithm**: Core AES encryption and decryption implementation.
 - **Key Expansion**: Generates round keys for each round during encryption/decryption.
-
-
-## Modes of Operation
-
-- **ECB (Electronic Codebook)**: Encrypts each block independently (vulnerable to certain attacks).
-- **GCM (Galois/Counter Mode)**: Provides both encryption and integrity verification (AEAD mode).
