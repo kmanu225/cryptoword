@@ -231,7 +231,7 @@ def examples_montgomery(title="Montgomery form"):
         [-2, 1],
         [1, -1],
         [-3, -1],
-        [2, -1],
+        [3, 0],
     ]
     for param in parameters:
 
