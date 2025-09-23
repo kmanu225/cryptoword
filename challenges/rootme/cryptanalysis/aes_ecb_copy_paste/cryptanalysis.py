@@ -1,20 +1,18 @@
+# ====================================================
+# Root-me "AES-ECB Copy-Paste" challenge cryptanalysis
+# https://www.root-me.org/fr/Challenges/Cryptanalyse/AES-ECB-Copy-Paste
+# ====================================================
+
+
+# Tips:
+#  - AES block size is 16 bytes. Work in 16-byte units (not fixed hex offsets).
+#  - When manipulating ciphertext hex, remember: 16 bytes = 32 hex characters.
+#  - You do not need to get the exact JSON {"username": "admin", "isAdmin": true},
+
+
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
-
-# Root-me AES-ECB Copy-Paste challenge cryptanalysis : https://www.root-me.org/fr/Challenges/Cryptanalyse/AES-ECB-Copy-Paste
-# ====================================================
-# This script demonstrates how to craft a valid AES-ECB ciphered text (a token) to authenticate 
-# as "admin" by mixing ciphertext blocks from two different encryptions.
-#
-# Key points:
-#  - AES block size is 16 bytes. Work in 16-byte units (not fixed hex offsets).
-#  - When manipulating ciphertext hex, remember: 16 bytes = 32 hex characters.
-#
-# The goal: produce a ciphertext that corresponds to a valid JSON structure that contains the following 
-# entries: "username": "admin" and "isAdmin": true. As this will be checked by the server to give admin access.
-# Not that we do not have to get the exact JSON {"username": "admin", "isAdmin": true},
-# but any JSON that contains these entries, e.g. {"username": "admin", "isAdmin": true, "fakeKey": "myFakeEntry"}.
 
 
 # AES-128 key (16 bytes)

@@ -1,9 +1,13 @@
-from pwn import *
-from time import time
-
 # Root-me Service - Timing attack challenge cryptanalysis
 # https://www.root-me.org/fr/Challenges/Cryptanalyse/Service-Timing-attack
 # ====================================================
+
+# The idea is to exploit timing differences in server responses to deduce the correct password 
+# character by character.
+# Tips: Measure the average comparison time for each character in the password.
+
+from pwn import *
+from time import time
 
 ALPHABET = string.printable[:-5]
 
