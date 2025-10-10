@@ -1,54 +1,29 @@
-from utils import LATIN_ALPHABET
+from utils import FRENCH_FREQUENCY, score, rot_right
+
+def strong_rot_bruteforce(cipher_text, alphabet_frequencies=FRENCH_FREQUENCY) -> list:
+    plausible_texts = []
+    for i in range(255):
+        decoded = bytes([(b + i) % 256 for b in cipher_text])
+        plausible_texts.append((i, score(decoded.decode('latin-1', errors='ignore'), alphabet_frequencies), decoded))
+    plausible_texts.sort(key=lambda x: x[1], reverse=True)
+    return plausible_texts
 
 
-def rot_right(text, decalage):
-    """
-    Applies a Caesar cipher shift to the right (forward in the alphabet).
-
-    Args:
-        text (str): The plaintext to encrypt (assumed lowercase).
-        decalage (int): The shift amount (e.g., 3 means A -> D).
-
-    Returns:
-        str: The encrypted ciphertext.
-    """
-    result = ""
-    for char in text:
-        if char in LATIN_ALPHABET:
-            new_index = (LATIN_ALPHABET.index(char) + decalage) % 26
-            result += LATIN_ALPHABET[new_index]
-        else:
-            result += char  # Keep non-alphabetic characters unchanged
-    return result
-
-
-def rot_left(text, decalage):
-    """
-    Reverses a Caesar cipher shift to the left (backward in the alphabet).
-
-    Args:
-        text (str): The ciphertext to decrypt (assumed lowercase).
-        decalage (int): The shift amount used during encryption.
-
-    Returns:
-        str: The decrypted plaintext.
-    """
-    result = ""
-    for char in text:
-        if char in LATIN_ALPHABET:
-            new_index = (LATIN_ALPHABET.index(char) - decalage) % 26
-            result += LATIN_ALPHABET[new_index]
-        else:
-            result += char  # Keep non-alphabetic characters unchanged
-    return result
-
-
-bruteforce_cesar = lambda cipher_text: [rot_left(cipher_text, i) for i in range(26)]
+def weak_rot_bruteforce(cipher_text, alphabet_frequencies=FRENCH_FREQUENCY) -> list:
+    plausible_texts = []
+    for i in range(26):
+        decoded = rot_right(cipher_text, i)
+        plausible_texts.append((i, score(decoded, alphabet_frequencies), decoded))
+    plausible_texts.sort(key=lambda x: x[1], reverse=True)
+    return plausible_texts
 
 
 if __name__ == "__main__":
     cipher_text = "shqhykpuplylklslnbtlzjlzabuwlbkljlchuaxbhuktltlxbhukvuuvbzshzlyaxblsslmbtlavbasltvuklhklshwlpulvuzlkpaxbljhulkvpawhzlayljvvsklaylkbaplyztvuklvbklcpcylwlukhuashnblyyljhylukobtislbulzljvukl"
 
-    # cipher_text = striper(cipher_text)
-    for text in bruteforce_cesar(cipher_text):
-        print(f"Decalage: {bruteforce_cesar(cipher_text).index(text)}\n{text}\n\n")
+
+    for decalage, sc, text in weak_rot_bruteforce(cipher_text)[:1]:
+        print(f"Decalage: {decalage}, Score: {sc}.\nText: {text}\n")
+        
+    for decalage, sc, text in strong_rot_bruteforce(bytes(cipher_text, "utf-8"))[:1]:
+        print(f"Decalage: {decalage}, Score: {sc}.\nText: {text}\n")

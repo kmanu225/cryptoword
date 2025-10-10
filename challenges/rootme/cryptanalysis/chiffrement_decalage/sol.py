@@ -4,8 +4,38 @@
 # ====================================================
 
 
-
 import os
+
+ENGLISH_FREQUENCY = {
+    ' ': 0.14,
+    'e': 0.12,
+    't': 0.09,
+    'other': 0.09,
+    'a': 0.08,
+    'o': 0.07,
+    'i': 0.06,
+    'n': 0.06,
+    's': 0.06,
+    'h': 0.06,
+    'r': 0.05,
+    'd': 0.04,
+    'l': 0.04,
+    'c': 0.02,
+    'u': 0.02,
+    'm': 0.02,
+    'w': 0.02,
+    'f': 0.02,
+    'g': 0.02,
+    'y': 0.01,
+    'p': 0.01,
+    'b': 0.01,
+    'v': 0.01,
+    'k': 0.01,
+    'j': 0.01,
+    'x': 0.00,
+    'q': 0.00,
+    'z': 0.00
+}
 
 FRENCH_FREQUENCY = {
     ' ': 0.15,
@@ -35,16 +65,16 @@ FRENCH_FREQUENCY = {
     'k': 0.0005,
     'w': 0.0017,
     'z': 0.0030,
-    'other': 0.01  # bucket for unknown chars
+    'other': 0.01
 }
 
 
-def frequency_table(string: str) -> dict:
+def frequency_table(string: str, alphabet_frequencies) -> dict:
     frequency = {}
     length = len(string)
 
     for character in string:
-        bucket = character if character in FRENCH_FREQUENCY else 'other'
+        bucket = character if character in alphabet_frequencies else 'other'
         frequency[bucket] = frequency.get(bucket, 0) + 1
 
     for k in frequency:
@@ -63,27 +93,25 @@ def chi_squared(expected_frequency: dict, computed_frequency: dict) -> float:
     return score
 
 
-def french_score(string: str) -> float:
-    computed_frequency = frequency_table(string.lower())
+def score(string: str, alphabet_frequencies=FRENCH_FREQUENCY) -> float:
+    computed_frequency = frequency_table(string.lower(), alphabet_frequencies)
     return 1 / chi_squared(FRENCH_FREQUENCY, computed_frequency)
 
 
-def right_rot_bruteforce(cipher_text) -> list:
+def rot_bruteforce(cipher_text, alphabet_frequencies=FRENCH_FREQUENCY) -> list:
     plausible_texts = []
     for i in range(255):
         decoded = bytes([(b + i) % 256 for b in cipher_text])
-        score = french_score(decoded.decode('latin-1', errors='ignore'))
-        plausible_texts.append((i, score, decoded))
+        plausible_texts.append((i, score(decoded.decode('latin-1', errors='ignore'), alphabet_frequencies), decoded))
     plausible_texts.sort(key=lambda x: x[1], reverse=True)
     return plausible_texts
 
 
-basedir = os.path.dirname(__file__)
-cipher_text = open(os.path.join(basedir, "ch7.bin"), "rb").read()
+if __name__ == "__main__":
+    basedir = os.path.dirname(__file__)
 
-results = right_rot_bruteforce(cipher_text)
-for decalage, score, text in results[:5]:
-    print(f"Decalage: {decalage}, Score: {score}\n{text}\n\n")
-
-
+    ch7 = open(os.path.join(basedir, "ch7.bin"), "rb").read()
+    results = rot_bruteforce(ch7)
+    for decalage, sc, text in results[:1]:
+        print(f"Decalage: {decalage}, Score: {sc}.\nText: {text}\n")
 

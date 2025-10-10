@@ -1,115 +1,45 @@
-LATIN_ALPHABET = "".join([chr(ord("a") + i) for i in range(26)])
+from collections import Counter
 
-def get_frequences(text):
-    """
-    Counts the frequency of each letter in the given text.
+LATIN_ALPHABET = "".join(chr(ord("a") + i) for i in range(26))
 
-    Args:
-        text (str): Input text (assumed lowercase and stripped of punctuation).
-
-    Returns:
-        dict: A dictionary with letters as keys and their frequency as values, sorted by frequency descending.
-    """
-    frequence = {}
-    for letter in text:
-        if letter in frequence:
-            frequence[letter] += 1
-        else:
-            frequence[letter] = 1
-    return {k: v for k, v in sorted(frequence.items(), key=lambda item: item[1], reverse=True)}
-
+def get_frequencies(text):
+    """Count letter frequencies and return a dict sorted by descending frequency."""
+    return dict(Counter(text).most_common())
 
 def striper(text):
-    """
-    Removes punctuation, whitespace, and special characters from the text and converts it to lowercase.
+    """Remove punctuation/whitespace and lowercase the text."""
+    allowed = set(LATIN_ALPHABET)
+    return "".join(c for c in text.lower() if c in allowed)
 
-    Args:
-        text (str): The original plaintext or ciphertext.
+def get_affine_key(frequencies):
+    """Guess affine cipher key (a, b) using frequency analysis."""
+    (first, _), (second, _) = list(frequencies.items())[:2]
+    f1, f2 = ord(first) - ord("a"), ord(second) - ord("a")
 
-    Returns:
-        str: Cleaned lowercase text containing only LATIN_ALPHABETic characters.
-    """
-    special_characters = [" ", "\n", "\t", ".", ",", ";", ":", "!", "?", "(", ")", "[", "]", "{", "}", "'", '"', "-"]
-    for char in special_characters:
-        text = text.replace(char, "")
-    return text.lower()
-
-
-def get_affine_key(frequence):
-    """
-    Attempts to guess the key (a, b) for an affine cipher based on frequency analysis.
-
-    Args:
-        frequence (dict): Letter frequencies in the ciphertext.
-
-    Returns:
-        tuple: The guessed affine key (a, b), where a is coprime with 26 and b is the shift.
-    """
-    
-    # Get the most and second most frequent letters in ciphertext
-    ORD_LOWER_A = ord("a")
-    ordered_frequence = sorted(frequence.items(), key=lambda x: x[1], reverse=True)
-    first_max = ord(ordered_frequence[0][0]) - ORD_LOWER_A
-    second_max = ord(ordered_frequence[1][0]) - ORD_LOWER_A
-
-    ORD_LOWER_E = ord("e") - ORD_LOWER_A # First most commonly used caractere in french
-    ord_t = ord("t") - ORD_LOWER_A # Second most commonly used caractere in Notre Dame de Paris (a, s, t, r). This can change according to the domain.
-
-    # Solve the affine system to find a and b
-    a = (second_max - first_max) * pow(ord_t - ORD_LOWER_E, -1, 26) % 26
-    b = (first_max - a * ORD_LOWER_E) % 26
-    return (a, b)
-
+    e, t = ord("e") - ord("a"), ord("t") - ord("a")
+    a = (f2 - f1) * pow(t - e, -1, 26) % 26
+    b = (f1 - a * e) % 26
+    return a, b
 
 def affine_cipher(text, key):
-    """
-    Encrypts a message using the affine cipher.
-
-    Args:
-        text (str): Plaintext to encrypt (lowercase).
-        key (tuple): The key (a, b) used in the affine cipher.
-
-    Returns:
-        str: Encrypted ciphertext.
-    """
-    result = ""
-    for char in text:
-        if char in LATIN_ALPHABET:
-            index = LATIN_ALPHABET.index(char)
-            result += LATIN_ALPHABET[(key[0] * index + key[1]) % 26]
-        else:
-            result += char
-    return result
-
+    """Encrypt with affine cipher."""
+    a, b = key
+    return "".join(
+        LATIN_ALPHABET[(a * (ord(c) - 97) + b) % 26] if c in LATIN_ALPHABET else c
+        for c in text
+    )
 
 def affine_decipher(text, key):
-    """
-    Decrypts a message encrypted with the affine cipher.
-
-    Args:
-        text (str): Ciphertext to decrypt (lowercase).
-        key (tuple): The key (a, b) used in the affine cipher.
-
-    Returns:
-        str: Decrypted plaintext.
-    """
-    result = ""
-    a_inv = pow(key[0], -1, 26)
-    for char in text:
-        if char in LATIN_ALPHABET:
-            index = LATIN_ALPHABET.index(char)
-            result += LATIN_ALPHABET[(a_inv * (index - key[1])) % 26]
-        else:
-            result += char
-    return result
-
-
-
+    """Decrypt with affine cipher."""
+    a, b = key
+    a_inv = pow(a, -1, 26)
+    return "".join(
+        LATIN_ALPHABET[(a_inv * (ord(c) - 97 - b)) % 26] if c in LATIN_ALPHABET else c
+        for c in text
+    )
 
 if __name__ == "__main__":
-    decrypt_affine = lambda text: affine_decipher(text, get_affine_key(get_frequences(text)))
+    decrypt_affine = lambda text: affine_decipher(text, get_affine_key(get_frequencies(text)))
 
     cipher_text = "ntjmpumgxpqtstgapgtxpnchumtputgfsftgthnngxnchumwxootrtumhpyctgktjqtjchfooxujqhgztumxpotjxotfoqtohrxumhzutwftgtopfmnt jmpuatmfmshodpfrxpjjtatghbxuj"
-    
-    cipher_text = striper(cipher_text)
-    print(decrypt_affine(cipher_text))
+    print(decrypt_affine(striper(cipher_text)))

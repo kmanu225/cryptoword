@@ -53,7 +53,6 @@ LSA secrets contain several useful items related to cached/domain credentials:
 
 These keys can assist in decrypting or recovering other stored credentials, and are commonly extracted from the `SYSTEM`/`SECURITY` registry hives.
 
-
 ### Preparing hashes for cracking
 
 **For John the Ripper** (format `mscash`):
@@ -70,3 +69,4 @@ echo "Administrator:15a57c279ebdfea574ad1ff91eb6ef0c" > john_hashes.txt
 john --format=mscash --wordlist=/usr/share/wordlists/rockyou.txt john_hashes.txt
 john --format=mscash --show john_hashes.txt
 ```
+
